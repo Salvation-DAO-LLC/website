@@ -1,0 +1,12 @@
+{
+    "name": "Round 2 - Supremacy DAO Supporter",
+    "description": "Thank you for your support",
+    "image": "https://supremacydao.com/supdao.png",
+    "attributes": [
+        {
+            "display_type": "number",
+            "trait_type": "Round",
+            "value": 2
+        }
+    ]
+}
