@@ -24,13 +24,11 @@ export default function Home() {
                 <MouseParallaxChild factorX={0.3} factorY={0.5} style={{ position: "absolute" }}>
                     <div
                         style={{
-                            position: "absolute",
-                            transform: "translate(-20%, -20%)",
-                            top: 0,
+                            transform: "translate(-10vw, -10vh)",
                             backgroundRepeat: "no-repeat",
                             backgroundImage: `url(${One.src})`,
                             backgroundSize: "cover",
-                            backgroundPosition: "-400px top",
+                            backgroundPosition: "top",
                             width: "140vw",
                             height: "140vh",
                         }}
@@ -39,13 +37,11 @@ export default function Home() {
                 <MouseParallaxChild factorX={0.2} factorY={0.8} style={{ position: "absolute" }}>
                     <div
                         style={{
-                            position: "absolute",
-                            transform: "translate(-20%, -20%)",
-                            top: 0,
+                            transform: "translate(-10vw, -10vh)",
                             backgroundRepeat: "no-repeat",
                             backgroundImage: `url(${Two.src})`,
                             backgroundSize: "cover",
-                            backgroundPosition: "left 400px",
+                            backgroundPosition: "center",
                             width: "140vw",
                             height: "140vh",
                         }}
@@ -54,14 +50,12 @@ export default function Home() {
                 <MouseParallaxChild factorX={0.2} factorY={0.5} style={{ position: "absolute" }}>
                     <div
                         style={{
-                            position: "absolute",
-                            transform: "translate(-10%, -10%)",
-                            top: 0,
+                            transform: "translate(-10vw, -10vh)",
                             backgroundColor: "transparent",
                             backgroundRepeat: "no-repeat",
                             backgroundImage: `url(${Three.src})`,
                             backgroundSize: "cover",
-                            backgroundPosition: "-400px 300px",
+                            backgroundPosition: "right",
                             width: "120vw",
                             height: "120vh",
                         }}
