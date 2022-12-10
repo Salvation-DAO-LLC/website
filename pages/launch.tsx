@@ -1,6 +1,5 @@
 import { Box, Card, Container, Flex, Tabs, Title } from "@mantine/core"
 import { GoalCard } from "../components"
-import AppHeader from "../components/AppHeader"
 import FAQ from "../components/FAQ"
 import Message from "../components/Message"
 import PackageCard from "../components/PackageCard"
@@ -8,6 +7,7 @@ import PledgeCard from "../components/PledgeCard"
 import { useApp } from "../state"
 import { packages } from "../state/packages"
 import { useWeb3 } from "../state/web3"
+import CoreTeam from "../components/CoreTeam"
 
 export default function App() {
     const { currentTotalExpected, currentPercentage, pledgeAmount, setPledgeAmount } = useApp()
@@ -52,6 +52,9 @@ export default function App() {
                                     <Tabs.Tab color="teal" value="faq">
                                         FAQ
                                     </Tabs.Tab>
+                                    <Tabs.Tab color="red" value="core">
+                                        Core Team
+                                    </Tabs.Tab>
                                 </Tabs.List>
 
                                 <Tabs.Panel value="salvation" mb={"-10px"}>
@@ -61,6 +64,11 @@ export default function App() {
                                 <Tabs.Panel value="faq" pt="xs">
                                     <Flex>
                                         <FAQ />
+                                    </Flex>
+                                </Tabs.Panel>
+                                <Tabs.Panel value="core" pt="xs">
+                                    <Flex>
+                                        <CoreTeam />
                                     </Flex>
                                 </Tabs.Panel>
                             </Tabs>

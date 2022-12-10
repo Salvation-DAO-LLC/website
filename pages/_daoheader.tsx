@@ -84,6 +84,26 @@ export default function DAOHeader() {
                         >
                             Launch
                         </Link>
+                        <Link
+                            key={"launch"}
+                            href={"/launch"}
+                            className={cx(classes.link, { [classes.linkActive]: active === "roadmap" })}
+                            onClick={(event) => {
+                                setActive("roadmap")
+                            }}
+                        >
+                            Roadmap
+                        </Link>
+                        <Link
+                            key={"launch"}
+                            href={"/launch"}
+                            className={cx(classes.link, { [classes.linkActive]: active === "roadmap" })}
+                            onClick={(event) => {
+                                setActive("roadmap")
+                            }}
+                        >
+                            Whitepaper
+                        </Link>
                     </Group>
 
                     <Burger opened={opened} onClick={toggle} className={classes.burger} size="sm" />
