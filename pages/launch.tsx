@@ -53,7 +53,7 @@ export default function App() {
                                         FAQ
                                     </Tabs.Tab>
                                     <Tabs.Tab color="red" value="core">
-                                        Core Team
+                                        Core Jobs
                                     </Tabs.Tab>
                                 </Tabs.List>
 
@@ -82,8 +82,14 @@ export default function App() {
                                 Reward Packages
                             </Title>
                             {packages &&
-                                packages.map((pkg) => (
-                                    <PackageCard {...pkg} backers={1} isReceiving={pledgeAmount >= pkg.minAmount} setPledgeAmount={setPledgeAmount} />
+                                packages.map((pkg, i) => (
+                                    <PackageCard
+                                        {...pkg}
+                                        key={`pkg-${i}`}
+                                        backers={1}
+                                        isReceiving={pledgeAmount >= pkg.minAmount}
+                                        setPledgeAmount={setPledgeAmount}
+                                    />
                                 ))}
                         </Box>
                     </Container>
