@@ -12,16 +12,14 @@ interface Props {
 
 const PledgeCard = ({ pledgeAmount, setPledgeAmount }: Props) => {
     const [isPinned, setIsPinned] = useState<boolean>(false)
-    const [message, setMessage] = useState("")
     const nodeRef = useRef<HTMLDivElement | undefined>(undefined)
     const {
         setShowSuccessPledge,
         showSuccessPledge,
-        currentRound,
         currentChainId,
         deployments,
         TXWaiting,
-        userDeposit,
+        userPledge,
         usdtApprove,
         usdtAllowance,
         usdtBalance,
@@ -60,12 +58,6 @@ const PledgeCard = ({ pledgeAmount, setPledgeAmount }: Props) => {
         }
     }, [])
 
-    // if (!max || max < min) {
-    //     max = 50
-    // }
-
-    // console.log(min, max)
-
     return (
         <Card
             id={"pledge-card"}
@@ -95,71 +87,60 @@ const PledgeCard = ({ pledgeAmount, setPledgeAmount }: Props) => {
                 )}
             </Modal>
             <Card.Section p={isPinned ? "xs" : "lg"} pb={"sm"}>
-                        <>
-                            {account && (
-                                <NumberInput
-                                    max={max}
-                                    size={isPinned ? "sm" : "xl"}
-                                    radius="md"
-                                    defaultValue={pledgeAmount}
-                                    value={pledgeAmount}
-                                    onChange={(value: number) => {
-                                        if (!value) {
-                                            setPledgeAmount(0)
-                                            return
-                                        }
-                                        if (value > 1000000) {
-                                            setPledgeAmount(1000000)
-                                            return
-                                        }
-                                        setPledgeAmount(value)
-                                    }}
-                                    placeholder="Pledge amount"
-                                    label={!isPinned ? "Your Pledge Amount (USDT)" : undefined}
-                                    step={25}
-                                    min={min}
-                                    parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, "") : "")}
-                                    formatter={(value: string | undefined) =>
-                                        !Number.isNaN(parseFloat(value || "0")) ? `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "$ "
-                                    }
-                                />
-                            )}
-                            {usdtBalance && (
-                                <Text
-                                    sx={{ cursor: "pointer" }}
-                                    onClick={() => {
-                                        setPledgeAmount(+utils.formatUnits(usdtBalance, 6))
-                                    }}
-                                    align="right"
-                                >
-                                    USDT: ${(+utils.formatUnits(usdtBalance, 6)).toLocaleString()}
-                                </Text>
-                            )}
-                            {showContribute && (
-                                <TextInput
-                                    size={isPinned ? "sm" : "xl"}
-                                    radius="md"
-                                    placeholder="Pledge message"
-                                    value={message}
-                                    label={!isPinned ? "Your Message" : undefined}
-                                    onChange={(event: any) => {
-                                        setMessage(event.target.value)
-                                    }}
-                                />
-                            )}
-                            {isPinned && showConnect && (
-                                <Button
-                                    fullWidth
-                                    variant="gradient"
-                                    size={isPinned ? "sm" : "xl"}
-                                    radius="md"
-                                    gradient={{ from: "orange", to: "red" }}
-                                    mt={"1rem"}
-                                    onClick={() => connect()}
-                                >
-                                    Connect Wallet
-                                </Button>
-                            )}
+                <>
+                    {account && (
+                        <NumberInput
+                            max={max}
+                            size={isPinned ? "sm" : "xl"}
+                            radius="md"
+                            defaultValue={pledgeAmount}
+                            value={pledgeAmount}
+                            onChange={(value: number) => {
+                                if (value > 5000000) {
+                                    setPledgeAmount(5000000)
+                                    return
+                                }
+                                if (!value) {
+                                    setPledgeAmount(0)
+                                    return
+                                }
+                                setPledgeAmount(value)
+                            }}
+                            placeholder="Pledge amount"
+                            label={!isPinned ? "Your Pledge Amount (USDT)" : undefined}
+                            step={25}
+                            min={min}
+                            parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, "") : "")}
+                            formatter={(value: string | undefined) =>
+                                !Number.isNaN(parseFloat(value || "0")) ? `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "$ "
+                            }
+                        />
+                    )}
+                    {usdtBalance && (
+                        <Text
+                            sx={{ cursor: "pointer" }}
+                            onClick={() => {
+                                setPledgeAmount(+utils.formatUnits(usdtBalance, 6))
+                            }}
+                            align="right"
+                        >
+                            USDT: ${(+utils.formatUnits(usdtBalance, 6)).toLocaleString()}
+                        </Text>
+                    )}
+
+                    {isPinned && showConnect && (
+                        <Button
+                            fullWidth
+                            variant="gradient"
+                            size={isPinned ? "sm" : "xl"}
+                            radius="md"
+                            gradient={{ from: "orange", to: "red" }}
+                            mt={"1rem"}
+                            onClick={() => connect()}
+                        >
+                            Connect Wallet
+                        </Button>
+                    )}
                     {showApprove && isPinned && (
                         <Button
                             variant="gradient"
@@ -179,7 +160,7 @@ const PledgeCard = ({ pledgeAmount, setPledgeAmount }: Props) => {
                             gradient={{ from: "orange", to: "red" }}
                             fullWidth
                             onClick={() => {
-                                userDeposit(pledgeAmount, message)
+                                userPledge(pledgeAmount)
                             }}
                             disabled={disablePledgeButton}
                         >
@@ -190,7 +171,7 @@ const PledgeCard = ({ pledgeAmount, setPledgeAmount }: Props) => {
             </Card.Section>
             <Card.Section pb={"sm"} pt={0} m={0}>
                 <Text weight={400} transform={"capitalize"}>
-                    You will receive {pledgeAmount.toLocaleString()} Supremacy DAO {currentRound ? `Round ${currentRound}` : ``} tokens.
+                    You will receive {pledgeAmount.toLocaleString()} Supremacy DAO {pledgeAmount} tokens.
                 </Text>
             </Card.Section>
 
@@ -210,8 +191,12 @@ const PledgeCard = ({ pledgeAmount, setPledgeAmount }: Props) => {
                                 gradient={{ from: "orange", to: "red" }}
                                 fullWidth
                                 disabled={disablePledgeButton}
-                                onClick={() => {
-                                    userDeposit(pledgeAmount, message)
+                                onClick={async () => {
+                                    try {
+                                        userPledge(pledgeAmount)
+                                    } catch (err) {
+                                        console.error(err)
+                                    }
                                 }}
                             >
                                 Make Pledge
@@ -220,12 +205,12 @@ const PledgeCard = ({ pledgeAmount, setPledgeAmount }: Props) => {
                     </>
                 </Card.Section>
             )}
-            {/* <Web3Stuff pledgeAmount={pledgeAmount} message={""} /> */}
+            <Web3Stuff pledgeAmount={pledgeAmount} message={""} />
         </Card>
     )
 }
 const Web3Stuff = (props: { pledgeAmount: number; message: string }) => {
-    const { TXWaiting, usdtUnapprove, userDeposit, usdtApprove, usdtAllowance, usdtBalance, account, connect } = useWeb3()
+    const { TXWaiting, usdtUnapprove, userPledge, usdtApprove, usdtAllowance, usdtBalance, account, connect } = useWeb3()
     const showConnect = !account && connect
     const showApprove = !showConnect && usdtAllowance && usdtAllowance < utils.formatUnits(props.pledgeAmount, 6)
     const showContribute = !showApprove && !showConnect
@@ -233,7 +218,7 @@ const Web3Stuff = (props: { pledgeAmount: number; message: string }) => {
         <div>
             <>
                 <p>Web 3 tools for cut and paste:</p>
-                <p>USDT Allowance: {usdtAllowance ? "Maximum" : "N/A"}</p>
+                <p>USDT Allowance: {usdtAllowance && usdtAllowance > 0 ? "Maximum" : "N/A"}</p>
                 <p>USDT Contribution: {props.pledgeAmount}</p>
                 <p>USDT Balance: {usdtBalance ? utils.formatUnits(usdtBalance.toString(), 6) : "N/A"}</p>
                 {showConnect && (
@@ -253,7 +238,7 @@ const Web3Stuff = (props: { pledgeAmount: number; message: string }) => {
                         gradient={{ from: "orange", to: "red" }}
                         fullWidth
                         onClick={() => {
-                            userDeposit(props.pledgeAmount, props.message)
+                            userPledge(props.pledgeAmount)
                         }}
                     >
                         Contribute

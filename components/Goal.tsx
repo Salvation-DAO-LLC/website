@@ -1,5 +1,6 @@
 import { Button, Text, Progress, Card } from "@mantine/core"
 import { ethers, utils } from "ethers"
+import { formatUnits, parseUnits } from "ethers/lib/utils"
 import { useWeb3 } from "../state/web3"
 
 interface Props {
@@ -9,13 +10,8 @@ interface Props {
 }
 
 function GoalCard({ currentTotalExpected, currentPercentage }: Props) {
-    const { currentChainId, deployments, changeChain, account, connect, currentRound, currentRoundSupply } = useWeb3()
+    const { currentChainId, deployments, changeChain, account, connect, totalPledged } = useWeb3()
     let displayProgress = 0
-    let numerator
-    if (currentRoundSupply) {
-        numerator = +currentRoundSupply.toString()
-        displayProgress = (numerator / 300000) * 100
-    }
     const wrongNetwork = currentChainId !== deployments.chainID && account
 
     return (
@@ -30,11 +26,11 @@ function GoalCard({ currentTotalExpected, currentPercentage }: Props) {
             })}
         >
             <Text size="xs" transform="uppercase" weight={700} color="dimmed">
-                <>Monthly goal {currentRound ? `(Current Round: ${currentRound})` : "$300,000"}</>
+                <>Monthly goal USD$50,000</>
             </Text>
             {account && !wrongNetwork && (
                 <Text size="lg" weight={500}>
-                    ${numerator?.toLocaleString()} / $300,000
+                    USD ${totalPledged && +formatUnits(totalPledged.toString(), 18).toLocaleString()} / USD $50,000
                 </Text>
             )}
             {account && !wrongNetwork && <Progress value={displayProgress} mt="md" size={50} color={"orange"} radius="lg" animate />}
@@ -67,7 +63,7 @@ function GoalCard({ currentTotalExpected, currentPercentage }: Props) {
                     Connect Wallet
                 </Button>
             )}
-            <a target="_blank" rel="noreferrer" href={`${deployments.blockExplorerURL}address/${deployments.recovery}`}>
+            <a target="_blank" rel="noreferrer" href={`${deployments.blockExplorerURL}address/${deployments.sdgToken}`}>
                 <Text mt={"0.25rem"} color={"orange"} align="right" size={"sm"}>
                     view on etherscan
                 </Text>

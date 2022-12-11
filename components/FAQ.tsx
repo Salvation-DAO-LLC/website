@@ -58,11 +58,15 @@ export default function FAQ() {
         }
 
         return faqtree.map((fq, i) => {
-            const makeKey = (fi: FAQItem) =>
-                fi.title
-                    .replace(/[^\w\s]/g, "")
-                    .replaceAll("#", "")
-                    .toLowerCase()
+            const makeKey = (fi: FAQItem) => {
+                return (
+                    fi.title
+                        .replace(/[^\w\s]/g, "")
+                        // .replaceAll("#", "")
+                        .toLowerCase()
+                )
+                console.log(fi)
+            }
 
             return (
                 <Box key={`faq-section-${i}`}>
