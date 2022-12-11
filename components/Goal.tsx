@@ -11,8 +11,13 @@ interface Props {
 
 function GoalCard({ currentTotalExpected, currentPercentage }: Props) {
     const { currentChainId, deployments, changeChain, account, connect, totalPledged } = useWeb3()
-    let displayProgress = 0
+    let progressPercent = 0
+    if (totalPledged) {
+        progressPercent = (+formatUnits(totalPledged.toString(), 18) * 100) / 150000
+    }
     const wrongNetwork = currentChainId !== deployments.chainID && account
+    const showGoalNumber = progressPercent > 10
+    console.log(progressPercent)
 
     return (
         <Card
@@ -26,14 +31,14 @@ function GoalCard({ currentTotalExpected, currentPercentage }: Props) {
             })}
         >
             <Text size="xs" transform="uppercase" weight={700} color="dimmed">
-                <>Monthly goal USD$50,000</>
+                Contributions
             </Text>
             {account && !wrongNetwork && (
                 <Text size="lg" weight={500}>
-                    USD ${totalPledged && +formatUnits(totalPledged.toString(), 18).toLocaleString()} / USD $50,000
+                    ${totalPledged && +formatUnits(totalPledged.toString(), 18).toLocaleString()} {showGoalNumber ? "/ $150,000" : ""}
                 </Text>
             )}
-            {account && !wrongNetwork && <Progress value={displayProgress} mt="md" size={50} color={"orange"} radius="lg" animate />}
+            {account && !wrongNetwork && <Progress value={showGoalNumber ? progressPercent : 100} mt="md" size={10} color={"orange"} radius="sm" animate />}
             {wrongNetwork && (
                 <Button
                     mt={"2rem"}

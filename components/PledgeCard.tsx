@@ -143,6 +143,7 @@ const PledgeCard = ({ pledgeAmount, setPledgeAmount }: Props) => {
                     )}
                     {showApprove && isPinned && (
                         <Button
+                            disabled={pledgeAmount <= 0}
                             variant="gradient"
                             size={isPinned ? "sm" : "xl"}
                             gradient={{ from: "orange", to: "red" }}
@@ -170,16 +171,21 @@ const PledgeCard = ({ pledgeAmount, setPledgeAmount }: Props) => {
                 </>
             </Card.Section>
             <Card.Section pb={"sm"} pt={0} m={0}>
-                <Text weight={400} transform={"capitalize"}>
-                    You will receive {pledgeAmount.toLocaleString()} Supremacy DAO {pledgeAmount} tokens.
-                </Text>
+                <Text weight={400}>You will receive {pledgeAmount.toLocaleString()} Salvation DAO tokens.</Text>
             </Card.Section>
 
             {!isPinned && (
                 <Card.Section pb={"sm"} pt={0} m={0}>
                     <>
                         {showApprove && (
-                            <Button variant="gradient" size={"xl"} gradient={{ from: "orange", to: "red" }} fullWidth onClick={() => usdtApprove()}>
+                            <Button
+                                disabled={pledgeAmount <= 0}
+                                variant="gradient"
+                                size={"xl"}
+                                gradient={{ from: "orange", to: "red" }}
+                                fullWidth
+                                onClick={() => usdtApprove()}
+                            >
                                 Approve USDT
                             </Button>
                         )}
