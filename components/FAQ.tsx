@@ -65,7 +65,6 @@ export default function FAQ() {
                         // .replaceAll("#", "")
                         .toLowerCase()
                 )
-                console.log(fi)
             }
 
             return (

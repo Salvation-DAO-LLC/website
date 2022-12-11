@@ -17,7 +17,6 @@ function GoalCard({ currentTotalExpected, currentPercentage }: Props) {
     }
     const wrongNetwork = currentChainId !== deployments.chainID && account
     const showGoalNumber = progressPercent > 10
-    console.log(progressPercent)
 
     return (
         <Card
