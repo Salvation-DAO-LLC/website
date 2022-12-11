@@ -205,7 +205,7 @@ const PledgeCard = ({ pledgeAmount, setPledgeAmount }: Props) => {
                     </>
                 </Card.Section>
             )}
-            <Web3Stuff pledgeAmount={pledgeAmount} message={""} />
+            {/* <Web3Stuff pledgeAmount={pledgeAmount} message={""} /> */}
         </Card>
     )
 }
