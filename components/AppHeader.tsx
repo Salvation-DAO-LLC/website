@@ -1,11 +1,12 @@
 import { Box } from "@mantine/core"
 import * as React from "react"
+import Image from "next/image"
 
 const AppHeader = () => {
     return (
         <>
             <Box sx={{ height: "60px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <img src={"/suplogo.svg"} style={{ maxWidth: "200px" }} />
+                <Image alt={"$SUPS"} src={"/suplogo.svg"} style={{ maxWidth: "200px" }} />
             </Box>
             <Box
                 sx={{
@@ -16,7 +17,7 @@ const AppHeader = () => {
                     justifyContent: "center",
                 }}
             >
-                <img src={"/header_text.png"} style={{ maxWidth: "90vw", maxHeight: "300px", padding: "20px" }} alt={"Project Salvation"} />
+                <Image src={"/header_text.png"} style={{ maxWidth: "90vw", maxHeight: "300px", padding: "20px" }} alt={"Project Salvation"} />
             </Box>
         </>
     )

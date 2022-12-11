@@ -94,8 +94,8 @@ function PackageCard({ name, description, contains, badge, badgeColor, minAmount
                             </ThemeIcon>
                         }
                     >
-                        {contains.map((item) => (
-                            <List.Item>{item}</List.Item>
+                        {contains.map((item, i) => (
+                            <List.Item key={`${item}-${i}`}>{item}</List.Item>
                         ))}
                     </List>
                 )}

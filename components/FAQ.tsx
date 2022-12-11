@@ -12,7 +12,7 @@ interface FAQSection {
     items: FAQItem[]
 }
 
-export default () => {
+export default function FAQ() {
     const faqBody: React.ReactNode | React.ReactNode[] = useMemo(() => {
         const sections: string[] | null = msg.split(/^(?=#+ )/m)
         if (!sections) return null
@@ -68,8 +68,8 @@ export default () => {
                 <Box key={`faq-section-${i}`}>
                     <ReactMarkdown>{fq.title}</ReactMarkdown>
                     <Accordion variant="filled" radius="md">
-                        {fq.items.map((fi) => (
-                            <Accordion.Item value={makeKey(fi)}>
+                        {fq.items.map((fi, i) => (
+                            <Accordion.Item value={makeKey(fi)} key={`faq-item-${i}`}>
                                 <Accordion.Control>
                                     <ReactMarkdown>{fi.title}</ReactMarkdown>
                                 </Accordion.Control>

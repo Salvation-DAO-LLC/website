@@ -2,7 +2,7 @@ import { Avatar, Box, Timeline, Title, Text, ThemeIcon } from "@mantine/core"
 import React from "react"
 import { IconSun, IconVideo } from "@tabler/icons"
 
-export default () => {
+export default function Roadmap() {
     return (
         <Box>
             <Timeline>
