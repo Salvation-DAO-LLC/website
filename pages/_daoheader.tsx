@@ -85,8 +85,8 @@ export default function DAOHeader() {
                             Launch
                         </Link>
                         <Link
-                            key={"launch"}
-                            href={"/launch"}
+                            key={"roadmap"}
+                            href={"/roadmap"}
                             className={cx(classes.link, { [classes.linkActive]: active === "roadmap" })}
                             onClick={(event) => {
                                 setActive("roadmap")
@@ -95,8 +95,8 @@ export default function DAOHeader() {
                             Roadmap
                         </Link>
                         <Link
-                            key={"launch"}
-                            href={"/launch"}
+                            key={"whitepaper"}
+                            href={"/whitepaper"}
                             className={cx(classes.link, { [classes.linkActive]: active === "roadmap" })}
                             onClick={(event) => {
                                 setActive("roadmap")

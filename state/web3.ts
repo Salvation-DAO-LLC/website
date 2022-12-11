@@ -1,9 +1,9 @@
-import { BigNumber, BigNumberish, ethers, utils } from "ethers"
+import { ethers, utils } from "ethers"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { createContainer } from "unstated-next"
 import { metamaskErrorHandling } from "../helpers/web3"
 import { showNotification } from "@mantine/notifications"
-import { CHAIN_ID, RECOVERY, USDT, BLOCK_EXPLORER_URL } from "./consts"
+import { CHAIN_ID, SDG_TOKEN, USDT, BLOCK_EXPLORER_URL } from "./consts"
 
 export enum MetaMaskState {
     NotInstalled,
@@ -20,7 +20,7 @@ export enum web3Constants {
 
 const deployments = {
     chainID: CHAIN_ID,
-    recovery: RECOVERY,
+    sdgToken: SDG_TOKEN,
     usdt: USDT,
     blockExplorerURL: BLOCK_EXPLORER_URL,
 }
@@ -54,9 +54,10 @@ export const Web3Container = createContainer(() => {
     const [metaMaskState, setMetaMaskState] = useState<MetaMaskState>(MetaMaskState.NotInstalled)
     const [block, setBlock] = useState<number>(-1)
     const [usdtBalance, setUsdtBalance] = useState<ethers.BigNumberish>()
+    const [totalPledged, setTotalPledged] = useState<ethers.BigNumber>()
+    const [supplyCap, setSupplyCap] = useState<ethers.BigNumber>()
+    const [totalSupply, setTotalSupply] = useState<ethers.BigNumber>()
     const [usdtAllowance, setUsdtAllowance] = useState<ethers.BigNumberish>()
-    const [currentRound, setCurrentRound] = useState<ethers.BigNumberish>()
-    const [currentRoundSupply, setCurrentRoundSupply] = useState<ethers.BigNumberish>()
     const [TXWaiting, setTXWaiting] = useState(false)
     const handleChainChange = useCallback((chainId: string) => {
         setCurrentChainId(parseInt(chainId))
@@ -158,7 +159,7 @@ export const Web3Container = createContainer(() => {
     }
 
     useEffect(() => {
-        if (provider) return // metamask connected
+        if (provider) return // on metamask connected
         ;(async () => {
             if (typeof (window as any).ethereum !== "undefined" || typeof (window as any).web3 !== "undefined") {
                 const provider = new ethers.providers.Web3Provider((window as any).ethereum, "any")
@@ -190,33 +191,7 @@ export const Web3Container = createContainer(() => {
         }
     }, [provider, handleAccountChange, handleChainChange])
 
-    useEffect(() => {
-        try {
-            const recoveryReadABI = [
-                "function currentRound() public view returns (uint256)",
-                "function recoveryMode() public view returns (bool)",
-                "function fiatDeposits(uint256 round) public returns (uint256)",
-                "function totalSupply(uint256 id) public returns (uint256)",
-            ]
-            if (!provider || !account) {
-                addError("Wallet is not connected.", "Please connect your wallet.", 1)
-                return
-            }
-            const signer = provider.getSigner()
-            const contract = new ethers.Contract(deployments.recovery, recoveryReadABI, signer)
-            contract.currentRound().then((roundNumber: ethers.BigNumberish) => {
-                setCurrentRound(roundNumber.toString())
-            })
-        } catch (e: any) {
-            const err = metamaskErrorHandling(e)
-            if (err) {
-                addError("Error from MetaMask", err, 3)
-            } else {
-                addError("Something strange happened.", "Please try hard refreshing your browser.", 3)
-            }
-            throw err
-        }
-    }, [block, account])
+    // USDT mutations
     const usdtUnapprove = async () => {
         if (!provider) return
         const abi = [`function approve(address _spender, uint256 _value) public returns (bool success)`]
@@ -224,7 +199,7 @@ export const Web3Container = createContainer(() => {
         let usdt = new ethers.Contract(deployments.usdt, abi, signer)
         try {
             setTXWaiting(true)
-            const tx = await usdt.approve(deployments.recovery, 0)
+            const tx = await usdt.approve(deployments.sdgToken, 0)
             await tx.wait()
         } catch (e) {
             const err = metamaskErrorHandling(e)
@@ -245,7 +220,7 @@ export const Web3Container = createContainer(() => {
         let usdt = new ethers.Contract(deployments.usdt, abi, signer)
         try {
             setTXWaiting(true)
-            const tx = await usdt.approve(deployments.recovery, ethers.constants.MaxUint256)
+            const tx = await usdt.approve(deployments.sdgToken, ethers.constants.MaxUint256)
             await tx.wait()
         } catch (e) {
             const err = metamaskErrorHandling(e)
@@ -260,11 +235,11 @@ export const Web3Container = createContainer(() => {
         }
     }
 
+    // USDT views
     useEffect(() => {
         if (!account) return
         try {
             const ERC20ABI = [
-                `function approve(address _spender, uint256 _value) public returns (bool success)`,
                 `function allowance(address _owner, address _spender) public view returns (uint256 remaining)`,
                 `function balanceOf(address _owner) public view returns (uint256 balance)`,
             ]
@@ -274,7 +249,7 @@ export const Web3Container = createContainer(() => {
             }
             const signer = provider.getSigner()
             const contract = new ethers.Contract(deployments.usdt, ERC20ABI, signer)
-            contract.allowance(account, deployments.recovery).then((allowance: ethers.BigNumberish) => {
+            contract.allowance(account, deployments.sdgToken).then((allowance: ethers.BigNumberish) => {
                 setUsdtAllowance(allowance.toString())
             })
             contract.balanceOf(account).then((balance: ethers.BigNumberish) => {
@@ -291,17 +266,22 @@ export const Web3Container = createContainer(() => {
         }
     }, [block, account])
 
+    // SDG views
     useEffect(() => {
         try {
-            const recoveryReadABI = ["function totalSupply(uint256 id) public view returns (uint256)"]
+            const recoveryReadABI = ["function supply_cap() public view returns (uint256)", "function totalSupply() public view returns (uint256)"]
             if (!provider || !account) {
                 addError("Wallet is not connected.", "Please connect your wallet.", 1)
                 return
             }
             const signer = provider.getSigner()
-            const contract = new ethers.Contract(deployments.recovery, recoveryReadABI, signer)
-            contract.totalSupply(currentRound).then((result: ethers.BigNumberish) => {
-                setCurrentRoundSupply(result)
+            const contract = new ethers.Contract(deployments.sdgToken, recoveryReadABI, signer)
+            contract.supply_cap().then((supplyCap: ethers.BigNumber) => {
+                setSupplyCap(supplyCap)
+            })
+            contract.totalSupply().then((totalSupply: ethers.BigNumber) => {
+                setTotalSupply(totalSupply)
+                setTotalPledged(totalSupply.div(2))
             })
         } catch (e: any) {
             const err = metamaskErrorHandling(e)
@@ -312,18 +292,18 @@ export const Web3Container = createContainer(() => {
             }
             throw err
         }
-    }, [currentRound, block])
+    }, [block, account])
 
-    const userDeposit = async (amount: number, message: string) => {
+    // SDG Mutations
+    const userPledge = async (amount: number) => {
         if (!provider) return
-        if (!currentRound) return
         try {
             const bigAmount = utils.parseUnits(amount.toString(), 6) // 6 decimals for USDT
-            const recoveryWriteABI = ["function UserDeposit(uint256 round, uint256 amount, string memory message) public"]
+            const recoveryWriteABI = ["function UserPledge(uint256 amount) public"]
             const signer = provider.getSigner()
-            const contract = new ethers.Contract(deployments.recovery, recoveryWriteABI, signer)
+            const contract = new ethers.Contract(deployments.sdgToken, recoveryWriteABI, signer)
             setTXWaiting(true)
-            const tx = await contract.UserDeposit(currentRound, bigAmount, message)
+            const tx = await contract.UserPledge(bigAmount)
             await tx.wait()
             setShowSuccessPledge(tx.hash)
         } catch (e: any) {
@@ -333,28 +313,8 @@ export const Web3Container = createContainer(() => {
             } else {
                 addError("Something strange happened.", "Please try hard refreshing your browser.", 3)
             }
-            throw err
-        } finally {
-            setTXWaiting(false)
-        }
-    }
+            console.error(e)
 
-    const userRefund = async (refundRound: ethers.BigNumberish) => {
-        if (!provider) return
-        try {
-            const recoveryWriteABI = ["function UserRefund(uint256 refundRound) public notRecoveryMode"]
-            const signer = provider.getSigner()
-            const contract = new ethers.Contract(deployments.recovery, recoveryWriteABI, signer)
-            setTXWaiting(true)
-            const tx = await contract.UserDeposit(refundRound)
-            await tx.wait()
-        } catch (e: any) {
-            const err = metamaskErrorHandling(e)
-            if (err) {
-                addError("Error from MetaMask", err, 3)
-            } else {
-                addError("Something strange happened.", "Please try hard refreshing your browser.", 3)
-            }
             throw err
         } finally {
             setTXWaiting(false)
@@ -362,10 +322,13 @@ export const Web3Container = createContainer(() => {
     }
 
     return {
+        totalPledged,
+        supplyCap,
+        totalSupply,
         deployments,
         TXWaiting,
         usdtUnapprove,
-        userDeposit,
+        userPledge,
         usdtApprove,
         usdtBalance,
         usdtAllowance,
@@ -376,9 +339,6 @@ export const Web3Container = createContainer(() => {
         block,
         connect,
         changeChain,
-        userRefund,
-        currentRound,
-        currentRoundSupply,
         showSuccessPledge,
         setShowSuccessPledge,
     }
