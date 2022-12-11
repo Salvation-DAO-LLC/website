@@ -106,7 +106,7 @@ function PackageCard({ name, description, contains, badge, badgeColor, minAmount
                 {isReceiving && (
                     <Box p={0} m={0}>
                         <Text size={12} align={"right"} className={classes.get}>
-                            You'll get this
+                            You&apos;ll get this
                         </Text>
                     </Box>
                 )}
